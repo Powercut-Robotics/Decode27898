@@ -35,8 +35,8 @@ public class ShooterControlled implements Subsystem {
     private boolean ballInPlace = false;
     public Button ballDetected = button(() -> ballInPlace);
 
-    public static double ballDetectionDistance = 75;
-    public static double ballDetectionAlpha = 150;
+    public static double ballDetectionDistance = 20;
+    public static double ballDetectionAlpha = 200;
 
 
     //Flywheel control system
@@ -56,7 +56,9 @@ public class ShooterControlled implements Subsystem {
 
 
     //Flywheel commands
-    public Command spinUp = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, 1500.0))).requires(this);
+
+    private static double targetVelocity = 1600;
+    public Command spinUp = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, targetVelocity))).requires(this);
 
     public Command cutPower = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, 0.0))).requires(this);
 
@@ -78,8 +80,12 @@ public class ShooterControlled implements Subsystem {
             );
 
 
-            ballInPlace = ballColour.getDistance(DistanceUnit.MM) < ballDetectionDistance && ballColour.alpha() > ballDetectionAlpha;
-            telemetry.addLine(String.format("Dist (mm), Alpha, Detected? %6.1f %6.1f", ballColour.getDistance(DistanceUnit.MM), ballColour.alpha(), ballInPlace));
+            if ((ballColour.getDistance(DistanceUnit.MM) < ballDetectionDistance || ballColour.alpha() > ballDetectionAlpha) || (ballColour.getDistance(DistanceUnit.MM) == 0))
+                ballInPlace = true;
+            else ballInPlace = false;
+
+
+            telemetry.addLine(String.format("Dist (mm), Alpha, Detected? %6.1f, %d", ballColour.getDistance(DistanceUnit.MM), ballColour.alpha(),ballInPlace ? "Yes": "No"));
 
             telemetry.addData("Flywheel Velocity", velocity);
         }

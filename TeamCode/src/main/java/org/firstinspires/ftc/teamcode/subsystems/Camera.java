@@ -37,7 +37,7 @@ public class Camera implements Subsystem {
 
 
     //Localisation and Tracking Variables
-    private final Position cameraPosition = new Position(DistanceUnit.CM, 0, 0, 30, 0);
+    private final Position cameraPosition = new Position(DistanceUnit.CM, -4, 5, 34, 0);
     private final YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0, -80, 0, 0);
 
     public Pose cameraCalculatedPose;

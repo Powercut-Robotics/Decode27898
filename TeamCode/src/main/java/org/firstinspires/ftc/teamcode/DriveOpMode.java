@@ -15,6 +15,7 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
+import dev.nextftc.hardware.driving.FieldCentric;
 import dev.nextftc.hardware.driving.MecanumDriverControlled;
 import dev.nextftc.hardware.impl.Direction;
 import dev.nextftc.hardware.impl.IMUEx;
@@ -59,7 +60,7 @@ public class DriveOpMode extends NextFTCOpMode {
                 Gamepads.gamepad1().leftStickY().negate().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().leftStickX().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().rightStickX().mapToRange(doubleValue -> doubleValue * turnScale)
-                //  ,new FieldCentric(imu)
+                  //,new FieldCentric(imu)
         );
 
         driverControlled.schedule();
@@ -74,6 +75,10 @@ public class DriveOpMode extends NextFTCOpMode {
             ShooterControlled.INSTANCE.ballDetected.not()
                     .and(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue())
                     .whenBecomesTrue(Feeder.INSTANCE.spinUp);
+
+        ShooterControlled.INSTANCE.ballDetected.not()
+                .and(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue().not())
+                .whenBecomesTrue(Feeder.INSTANCE.cutPower);
 
             //if we detect ball And Not holdining triangle, cut feeder
             ShooterControlled.INSTANCE.ballDetected
