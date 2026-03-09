@@ -32,7 +32,7 @@ public class ShooterControlled implements Subsystem {
     }
 
     //Ball detection stuff
-    private RevColorSensorV3 ballColour = ActiveOpMode.hardwareMap().get(RevColorSensorV3.class, "ballColour");
+    private RevColorSensorV3 ballColour;
     private boolean ballInPlace = false;
     public Button ballDetected = button(() -> ballInPlace);
 
@@ -73,6 +73,7 @@ public class ShooterControlled implements Subsystem {
     public void initialize() {
         telemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         flywheelControlSystem.setGoal(new KineticState(0.0, 0.0));
+        ballColour = ActiveOpMode.hardwareMap().get(RevColorSensorV3.class, "ballColour");
     }
 
     @Override

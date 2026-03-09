@@ -29,13 +29,12 @@ public class DriveOpMode extends NextFTCOpMode {
     private double xyScale = 0.7;
     private double turnScale = 0.5;
 
-    private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+    private TelemetryManager panelsTelemetry;
     public DriveOpMode() {
         addComponents(
                 new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
-                //the instance only brings the one instance in and cannot change and only does it at one point
         );
     }
 
@@ -48,7 +47,7 @@ public class DriveOpMode extends NextFTCOpMode {
 
     @Override
     public void onInit() {
-
+        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     }
 
 

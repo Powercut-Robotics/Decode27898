@@ -54,7 +54,7 @@ public class Intake implements Subsystem {
     @Override
     public void periodic() {
         currentDraw = currentFilter.filter(intakeMotor.getMotor().getCurrent(CurrentUnit.MILLIAMPS));
-        telemetry.addData("Intake Current (mA)", currentDraw);
+        telemetry.addData("Intake Current (mA) %3.1f", currentDraw);
 
         if (intakeStuck.get()) {
             telemetry.addLine("INTAKE STUCK");
