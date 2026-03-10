@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.icu.text.TimeZoneFormat;
+
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -10,6 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterControlled;
 
 import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.Gamepads;
@@ -27,13 +30,12 @@ public class DriveOpMode extends NextFTCOpMode {
     private double xyScale = 0.7;
     private double turnScale = 0.5;
 
-    private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+    private TelemetryManager panelsTelemetry;
     public DriveOpMode() {
         addComponents(
                 new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
-                //the instance only brings the one instance in and cannot change and only does it at one point
         );
     }
 
@@ -46,7 +48,7 @@ public class DriveOpMode extends NextFTCOpMode {
 
     @Override
     public void onInit() {
-
+        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     }
 
 
@@ -65,10 +67,28 @@ public class DriveOpMode extends NextFTCOpMode {
 
         driverControlled.schedule();
 
-        Gamepads.gamepad1().dpadUp()
-                .toggleOnBecomesTrue()
-                .whenBecomesTrue(Intake.INSTANCE.spinUp)
-                .whenBecomesFalse(Intake.INSTANCE.cutPower);
+        //INTAKE COMMANDS
+        Gamepads.gamepad1().dpadDown()
+                        .whenBecomesTrue(Intake.INSTANCE.pushOut);
+
+        Gamepads.gamepad1().dpadDown()
+                        .or(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue())
+                        .whenBecomesFalse(Intake.INSTANCE.cutPower);
+
+
+        Gamepads.gamepad1().dpadDown().not()
+                        .and(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue())
+                                .whenBecomesTrue(Intake.INSTANCE.spinUp);
+        //old
+
+//        Gamepads.gamepad1().dpadUp()
+//                .toggleOnBecomesTrue()
+//                .whenBecomesTrue(Intake.INSTANCE.spinUp)
+//                .whenBecomesFalse(Intake.INSTANCE.cutPower);
+
+        Gamepads.gamepad1().rightBumper()
+                        .whenBecomesTrue(ShooterControlled.INSTANCE.sensorPanic);
+
 
         //DELETE SECTION IF ISSUES SHOOTING W/O HOLDING TRIANGLE
             //feeder when intaking

@@ -8,8 +8,9 @@ import com.qualcomm.hardware.rev.RevColorSensorV3;
 
 import static dev.nextftc.bindings.Bindings.*;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import java.util.Locale;
 
 import dev.nextftc.bindings.Button;
 import dev.nextftc.control.ControlSystem;
@@ -31,12 +32,14 @@ public class ShooterControlled implements Subsystem {
     }
 
     //Ball detection stuff
-    private RevColorSensorV3 ballColour = ActiveOpMode.hardwareMap().get(RevColorSensorV3.class, "ballColour");
+    private RevColorSensorV3 ballColour;
     private boolean ballInPlace = false;
     public Button ballDetected = button(() -> ballInPlace);
 
-    public static double ballDetectionDistance = 20;
-    public static double ballDetectionAlpha = 200;
+    private static double ballDetectionDistance = 75;
+    private static double ballDetectionAlpha = 150;
+
+    private boolean panic = false;
 
 
     //Flywheel control system
@@ -56,17 +59,21 @@ public class ShooterControlled implements Subsystem {
 
 
     //Flywheel commands
-
-    private static double targetVelocity = 1600;
-    public Command spinUp = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, targetVelocity))).requires(this);
+    public Command spinUp = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, 1625.0))).requires(this);
 
     public Command cutPower = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, 0.0))).requires(this);
+
+
+    //ball
+
+    public Command sensorPanic = new InstantCommand(() -> panic = true);
 
 
     @Override
     public void initialize() {
         telemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         flywheelControlSystem.setGoal(new KineticState(0.0, 0.0));
+        ballColour = ActiveOpMode.hardwareMap().get(RevColorSensorV3.class, "ballColour");
     }
 
     @Override
@@ -80,12 +87,13 @@ public class ShooterControlled implements Subsystem {
             );
 
 
-            if ((ballColour.getDistance(DistanceUnit.MM) < ballDetectionDistance || ballColour.alpha() > ballDetectionAlpha) || (ballColour.getDistance(DistanceUnit.MM) == 0))
-                ballInPlace = true;
-            else ballInPlace = false;
+            ballInPlace = (ballColour.getDistance(DistanceUnit.MM) < ballDetectionDistance && ballColour.alpha() > ballDetectionAlpha) || panic;
 
-
-            telemetry.addLine(String.format("Dist (mm), Alpha, Detected? %6.1f, %d", ballColour.getDistance(DistanceUnit.MM), ballColour.alpha(),ballInPlace ? "Yes": "No"));
+            if (ballInPlace) {
+                telemetry.addLine(String.format(Locale.ENGLISH,"BALL DETECTED: Dist (mm), Alpha, Detected? %6.1f %d", ballColour.getDistance(DistanceUnit.MM), ballColour.alpha()));
+            } else {
+                telemetry.addLine(String.format(Locale.ENGLISH,"NO BALL: Dist (mm), Alpha, Detected? %6.1f %d", ballColour.getDistance(DistanceUnit.MM), ballColour.alpha()));
+            }
 
             telemetry.addData("Flywheel Velocity", velocity);
         }
