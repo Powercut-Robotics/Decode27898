@@ -7,6 +7,8 @@ import com.bylazar.telemetry.TelemetryManager;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
+import java.util.Locale;
+
 import dev.nextftc.bindings.Button;
 import dev.nextftc.control.filters.LowPassFilter;
 import dev.nextftc.core.commands.Command;
@@ -53,8 +55,8 @@ public class Intake implements Subsystem {
 
     @Override
     public void periodic() {
-        currentDraw = currentFilter.filter(intakeMotor.getMotor().getCurrent(CurrentUnit.MILLIAMPS));
-        telemetry.addData("Intake Current (mA) %3.1f", currentDraw);
+        currentDraw = currentFilter.filter(intakeMotor.getMotor().getCurrent(CurrentUnit.AMPS));
+        telemetry.addLine(String.format(Locale.ENGLISH,"Intake Current (A) %6.1f", currentDraw));
 
         if (intakeStuck.get()) {
             telemetry.addLine("INTAKE STUCK");

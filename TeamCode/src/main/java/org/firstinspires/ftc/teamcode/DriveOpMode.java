@@ -49,6 +49,7 @@ public class DriveOpMode extends NextFTCOpMode {
     @Override
     public void onInit() {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+        gamepad1.setLedColor(0, 255, 0, 120000);
     }
 
 
@@ -61,33 +62,38 @@ public class DriveOpMode extends NextFTCOpMode {
                 backRightMotor,
                 Gamepads.gamepad1().leftStickY().negate().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().leftStickX().mapToRange(doubleValue -> doubleValue * xyScale),
-                Gamepads.gamepad1().rightStickX().mapToRange(doubleValue -> doubleValue * turnScale)
-                  //,new FieldCentric(imu)
+                Gamepads.gamepad1().rightStickX().mapToRange(doubleValue -> doubleValue * turnScale),
+                new FieldCentric(imu)
         );
 
         driverControlled.schedule();
 
         //INTAKE COMMANDS
         Gamepads.gamepad1().dpadDown()
-                        .whenBecomesTrue(Intake.INSTANCE.pushOut);
+                .whenBecomesTrue(Intake.INSTANCE.pushOut)
+                .whenBecomesTrue(Feeder.INSTANCE.feedOut);
 
         Gamepads.gamepad1().dpadDown()
-                        .or(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue())
-                        .whenBecomesFalse(Intake.INSTANCE.cutPower);
+                .or(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue())
+                .whenBecomesFalse(Intake.INSTANCE.cutPower)
+                .whenBecomesFalse(Feeder.INSTANCE.cutPower);
 
 
         Gamepads.gamepad1().dpadDown().not()
                         .and(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue())
-                                .whenBecomesTrue(Intake.INSTANCE.spinUp);
-        //old
+                        .whenBecomesTrue(Intake.INSTANCE.spinUp)
+                        .whenBecomesTrue(Feeder.INSTANCE.cutPower);
 
-//        Gamepads.gamepad1().dpadUp()
-//                .toggleOnBecomesTrue()
-//                .whenBecomesTrue(Intake.INSTANCE.spinUp)
-//                .whenBecomesFalse(Intake.INSTANCE.cutPower);
+        Gamepads.gamepad1().touchpad()
+                .toggleOnBecomesTrue()
+                .whenBecomesTrue(ShooterControlled.INSTANCE.sensorPanic)
+                .whenBecomesTrue(new InstantCommand(() -> gamepad1.setLedColor(255, 0, 0, 120000)))
+                .whenBecomesFalse(ShooterControlled.INSTANCE.sensorUnPanic)
+                .whenBecomesFalse(new InstantCommand(() -> gamepad1.setLedColor(0, 255, 0, 120000)));
 
-        Gamepads.gamepad1().rightBumper()
-                        .whenBecomesTrue(ShooterControlled.INSTANCE.sensorPanic);
+
+        Gamepads.gamepad1().share()
+                .whenBecomesTrue(new InstantCommand(() -> imu.zeroed()));
 
 
         //DELETE SECTION IF ISSUES SHOOTING W/O HOLDING TRIANGLE
@@ -108,6 +114,7 @@ public class DriveOpMode extends NextFTCOpMode {
 
         Gamepads.gamepad1().triangle()
                 .whenBecomesTrue(Feeder.INSTANCE.spinUp)
+                .whenBecomesTrue(ShooterControlled.INSTANCE.spinUp)
                 .whenBecomesFalse(Feeder.INSTANCE.cutPower);
 
         Gamepads.gamepad1().triangle()
@@ -115,11 +122,11 @@ public class DriveOpMode extends NextFTCOpMode {
                 .whenBecomesTrue(Intake.INSTANCE.spinUp)
                 .whenBecomesFalse(Intake.INSTANCE.cutPower);
 
-        Gamepads.gamepad1().circle()
+        Gamepads.gamepad1().cross()
                 .whenBecomesTrue(ShooterControlled.INSTANCE.spinUp);
 
 
-        Gamepads.gamepad1().cross()
+        Gamepads.gamepad1().circle()
                 .whenBecomesTrue(ShooterControlled.INSTANCE.cutPower);
 
 

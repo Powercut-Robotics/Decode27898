@@ -24,6 +24,7 @@ public class Feeder implements Subsystem {
             .brakeMode();
 
     public Command spinUp = new InstantCommand(() -> power = 1).requires(this);
+    public Command feedOut = new InstantCommand(() -> power = -1).requires(this);
     public Command cutPower = new InstantCommand(() -> power = 0).requires(this);
 
     @Override
