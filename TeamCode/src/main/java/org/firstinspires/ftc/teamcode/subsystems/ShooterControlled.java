@@ -45,9 +45,9 @@ public class ShooterControlled implements Subsystem {
     //Flywheel control system
     public double velocity = 0;
 
-    public static double velocityTarget = 1525;
+    public static double velocityTarget = 1480;
 
-    public static PIDCoefficients flywheelPIDCoef = new PIDCoefficients(-0.0008, 0.0, 0.0);
+    public static PIDCoefficients flywheelPIDCoef = new PIDCoefficients(-0.001, 0.0, 0.0);
     public static BasicFeedforwardParameters flywheelFFCoef = new BasicFeedforwardParameters(-0.000425, 0, -0.04);
 
     private static final ControlSystem flywheelControlSystem = ControlSystem.builder()

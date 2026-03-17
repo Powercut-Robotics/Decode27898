@@ -100,7 +100,7 @@ public class DriveOpMode extends NextFTCOpMode {
             //feeder when intaking
             ShooterControlled.INSTANCE.ballDetected.not()
                     .and(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue())
-                    .whenBecomesTrue(Feeder.INSTANCE.spinUp);
+                    .whenTrue(Feeder.INSTANCE.spinUp);
 
         ShooterControlled.INSTANCE.ballDetected.not()
                 .and(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue().not())
