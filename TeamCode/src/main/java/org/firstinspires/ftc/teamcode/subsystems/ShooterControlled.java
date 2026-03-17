@@ -63,6 +63,7 @@ public class ShooterControlled implements Subsystem {
     //Flywheel commands
     public Command spinUp = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, velocityTarget))).requires(this);
 
+
     public Command cutPower = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, 0.0))).requires(this);
 
 

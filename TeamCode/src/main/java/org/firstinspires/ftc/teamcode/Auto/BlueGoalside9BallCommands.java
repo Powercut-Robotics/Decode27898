@@ -20,7 +20,6 @@ import org.firstinspires.ftc.teamcode.subsystems.ShooterControlled;
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
-import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -30,12 +29,12 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 
-@Autonomous(name = "Red Goalside - 9 (Command Based)")
-public class RedGoalside9BallCommands extends NextFTCOpMode {
+@Autonomous(name = "Blue Goalside - 9 (Command Based)")
+public class BlueGoalside9BallCommands extends NextFTCOpMode {
 
 
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
-    public RedGoalside9BallCommands() {
+    public BlueGoalside9BallCommands() {
         addComponents(
                 new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -57,71 +56,71 @@ public class RedGoalside9BallCommands extends NextFTCOpMode {
             Path1 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(119.500, 128.000),
-                                    new Pose(96.000, 100.000)
+                                    new Pose(24.500, 128.000),
+                                    new Pose(50.000, 100.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(45))
+                    .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(135))
                     .build();
 
             Path2 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(96.000, 100.000),
-                                    new Pose(104.000, 84.000)
+                                    new Pose(50.000, 100.000),
+                                    new Pose(40.000, 84.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                     .build();
 
             Path3 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(104.000, 84.000),
-                                    new Pose(124.000, 84.000)
+                                    new Pose(40.000, 84.000),
+                                    new Pose(20.000, 84.000)
                             )
                     )
-                    .setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
 
             Path4 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(124.000, 84.000),
-                                    new Pose(96.000, 100.000)
+                                    new Pose(20.000, 84.000),
+                                    new Pose(50.000, 100.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
                     .build();
 
             Path5 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(96.000, 100.000),
-                                    new Pose(104.000, 60.000)
+                                    new Pose(50.000, 100.000),
+                                    new Pose(40.000, 60.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                     .build();
 
             Path6 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(104.000, 60.000),
-                                    new Pose(124.000, 60.000)
+                                    new Pose(40.000, 60.000),
+                                    new Pose(20.000, 60.000)
                             )
                     )
-                    .setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
 
             Path7 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(124.000, 60.000),
-                                    new Pose(96.000, 100.000)
+                                    new Pose(20.000, 60.000),
+                                    new Pose(50.000, 100.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
                     .build();
         }
     }
@@ -131,8 +130,8 @@ public class RedGoalside9BallCommands extends NextFTCOpMode {
 
     @Override
     public void onInit() {
-        Globals.alliance = Globals.Alliance.RED;
-        follower().setStartingPose(new Pose(119.5, 128, Math.toRadians(45)));
+        Globals.alliance = Globals.Alliance.BLUE;
+        follower().setStartingPose(new Pose(24.5, 128, Math.toRadians(135)));
     }
 
 
