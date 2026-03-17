@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
+import static dev.nextftc.extensions.pedro.PedroComponent.follower;
+
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
@@ -8,6 +10,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.Camera;
 import org.firstinspires.ftc.teamcode.subsystems.Feeder;
@@ -43,7 +46,6 @@ public class BlueGoalside9Ball extends NextFTCOpMode {
 
     }
 
-    private Follower follower = PedroComponent.follower();
 
     public static class Paths {
         public PathChain Path1;
@@ -129,12 +131,12 @@ public class BlueGoalside9Ball extends NextFTCOpMode {
 
 
 
-    private Paths paths = new Paths(follower);
+    private Paths paths = new Paths(follower());
 
 
     @Override
     public void onInit() {
-
+        Globals.alliance = Globals.Alliance.BLUE;
     }
 
 
@@ -149,11 +151,11 @@ public class BlueGoalside9Ball extends NextFTCOpMode {
         switch (currentState) {
             case 1:
                 //Drive to shooting spot
-                follower.followPath(paths.Path1);
+                follower().followPath(paths.Path1);
                 ShooterControlled.INSTANCE.spinUp.schedule();
 
                 //advance once follower finishes
-                if (!follower.isBusy()) {
+                if (!follower().isBusy()) {
                     advance();
                 }
             case 2:
@@ -167,31 +169,31 @@ public class BlueGoalside9Ball extends NextFTCOpMode {
                 );
             case 3:
                 //drive to balls, all still spinning
-                follower.followPath(paths.Path2);
+                follower().followPath(paths.Path2);
 
                 //advance once follower finishes
-                if (!follower.isBusy()) {
+                if (!follower().isBusy()) {
                     advance();
                 }
             case 4:
-                follower.followPath(paths.Path3);
+                follower().followPath(paths.Path3);
 
                 //stop feeding when balls in
                 if (ShooterControlled.INSTANCE.ballDetected.get()) {
                     Feeder.INSTANCE.cutPower.schedule();
                 }
 
-                if (!follower.isBusy()) {
+                if (!follower().isBusy()) {
                     advance();
                 }
 
             case 5:
-                follower.followPath(paths.Path4);
+                follower().followPath(paths.Path4);
 
                 Intake.INSTANCE.cutPower.schedule();
 
 
-                if (!follower.isBusy()) {
+                if (!follower().isBusy()) {
                     advance();
                 }
 
@@ -207,31 +209,31 @@ public class BlueGoalside9Ball extends NextFTCOpMode {
 
             case 7:
                 //drive to balls, all still spinning
-                follower.followPath(paths.Path5);
+                follower().followPath(paths.Path5);
 
                 //advance once follower finishes
-                if (!follower.isBusy()) {
+                if (!follower().isBusy()) {
                     advance();
                 }
 
             case 8:
-                follower.followPath(paths.Path6);
+                follower().followPath(paths.Path6);
 
                 //stop feeding when balls in
                 if (ShooterControlled.INSTANCE.ballDetected.get()) {
                     Feeder.INSTANCE.cutPower.schedule();
                 }
 
-                if (!follower.isBusy()) {
+                if (!follower().isBusy()) {
                     advance();
                 }
             case 9:
-                follower.followPath(paths.Path7);
+                follower().followPath(paths.Path7);
 
                 Intake.INSTANCE.cutPower.schedule();
 
 
-                if (!follower.isBusy()) {
+                if (!follower().isBusy()) {
                     advance();
                 }
             case 10:
@@ -247,5 +249,7 @@ public class BlueGoalside9Ball extends NextFTCOpMode {
 
         panelsTelemetry.update(telemetry);
         telemetry.update();
+
+        Globals.pose = follower().getPose();
     }
 }

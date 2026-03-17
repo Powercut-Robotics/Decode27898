@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.icu.text.TimeZoneFormat;
-
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -16,6 +14,7 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
+import dev.nextftc.core.units.Angle;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
@@ -26,14 +25,14 @@ import dev.nextftc.hardware.impl.Direction;
 import dev.nextftc.hardware.impl.IMUEx;
 import dev.nextftc.hardware.impl.MotorEx;
 
-@TeleOp(name = "Drive w/ Cam")
-public class DriveOpMode extends NextFTCOpMode {
+@TeleOp(name = "Drive w/ Pedro")
+public class TeleOpPedro extends NextFTCOpMode {
 
     private double xyScale = 0.7;
     private double turnScale = 0.5;
 
     private TelemetryManager panelsTelemetry;
-    public DriveOpMode() {
+    public TeleOpPedro() {
         addComponents(
                 new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -47,12 +46,13 @@ public class DriveOpMode extends NextFTCOpMode {
     private final MotorEx backLeftMotor = new MotorEx("backLeftMotor").reversed().brakeMode();
     private final MotorEx frontRightMotor = new MotorEx("frontRightMotor").brakeMode();
     private final MotorEx backRightMotor = new MotorEx("backRightMotor").reversed().brakeMode();
-    private IMUEx imu = new IMUEx("imu", Direction.LEFT, Direction.UP).zeroed();
 
     @Override
     public void onInit() {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         gamepad1.setLedColor(0, 255, 0, 120000);
+
+        PedroComponent.follower().setStartingPose(Globals.pose);
     }
 
 
@@ -66,7 +66,7 @@ public class DriveOpMode extends NextFTCOpMode {
                 Gamepads.gamepad1().leftStickY().negate().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().leftStickX().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().rightStickX().mapToRange(doubleValue -> doubleValue * turnScale),
-                new FieldCentric(imu)
+                new FieldCentric(() -> Angle.fromRad(Globals.alliance == Globals.Alliance.RED ? PedroComponent.follower().getHeading() : PedroComponent.follower().getHeading() + Math.PI))
         );
 
         driverControlled.schedule();
@@ -96,7 +96,7 @@ public class DriveOpMode extends NextFTCOpMode {
 
 
         Gamepads.gamepad1().share()
-                .whenBecomesTrue(new InstantCommand(() -> imu.zeroed()));
+                .whenBecomesTrue(new InstantCommand(() -> PedroComponent.follower().setHeading(0)));
 
 
         //DELETE SECTION IF ISSUES SHOOTING W/O HOLDING TRIANGLE
@@ -139,5 +139,7 @@ public class DriveOpMode extends NextFTCOpMode {
     public void onUpdate() {
         panelsTelemetry.update(telemetry);
         telemetry.update();
+
+        Globals.pose = PedroComponent.follower().getPose();
     }
 }

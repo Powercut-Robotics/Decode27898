@@ -10,7 +10,6 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-
 import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.Camera;
@@ -19,34 +18,30 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterControlled;
 
 import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
+import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
+import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 
-@Autonomous(name = "Red Goalside - 9")
-public class RedGoalside9Ball extends NextFTCOpMode {
+@Autonomous(name = "Red Goalside - 9 (Command Based)")
+public class RedGoalside9BallCommands extends NextFTCOpMode {
 
 
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
-    public RedGoalside9Ball() {
+    public RedGoalside9BallCommands() {
         addComponents(
                 new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE,
                 new PedroComponent(Constants::createFollower)
         );
-    }
-
-    private int currentState = 0;
-
-    private void advance() {
-        currentState += 1;
-
     }
 
     public static class Paths {
@@ -137,116 +132,75 @@ public class RedGoalside9Ball extends NextFTCOpMode {
     @Override
     public void onInit() {
         Globals.alliance = Globals.Alliance.BLUE;
+        follower().setStartingPose(new Pose(119.5, 128, Math.toRadians(45)));
     }
 
 
     @Override
     public void onStartButtonPressed() {
-        advance();
+        new SequentialGroup(
+                //Drive to shoot
+                new ParallelGroup(
+                        new FollowPath(paths.Path1),
+                        ShooterControlled.INSTANCE.spinUp
+                ),
+                //shoot
+                new ParallelGroup(
+                        Intake.INSTANCE.spinUp,
+                        Feeder.INSTANCE.spinUp
+                ),
+                new Delay(4), //shoot complete
+
+                //drive to intake
+                new FollowPath(paths.Path2),
+                new ParallelGroup(
+                        //drive into balls
+                        new FollowPath(paths.Path3),
+                        new SequentialGroup(
+                                new ParallelGroup(
+                                        new LambdaCommand().setIsDone(() -> ShooterControlled.INSTANCE.ballDetected.get()),
+                                        new Delay(5) //deadline
+                                ),
+                                Feeder.INSTANCE.cutPower
+                        )
+                ),
+
+                //drive to shoot, do so
+                new FollowPath(paths.Path4),
+                new ParallelGroup(
+                        Feeder.INSTANCE.spinUp,
+                        new Delay(4)
+                ),
+
+                //drive to intake
+                new FollowPath(paths.Path5),
+
+                new ParallelGroup(
+                //drive into balls
+                    new FollowPath(paths.Path6),
+                    new SequentialGroup(
+                            new ParallelGroup(
+                                    new LambdaCommand().setIsDone(() -> ShooterControlled.INSTANCE.ballDetected.get()),
+                                    new Delay(5) //deadline
+                            ),
+                            Feeder.INSTANCE.cutPower
+                    )
+                ),
+
+                        //drive to shoot, do so
+                        new FollowPath(paths.Path7),
+                        new ParallelGroup(
+                                Feeder.INSTANCE.spinUp,
+                                new Delay(4)
+                        )
+
+
+
+        ).schedule();
     }
 
     @Override
     public void onUpdate() {
-
-        switch (currentState) {
-            case 1:
-                //Drive to shooting spot
-                follower().followPath(paths.Path1);
-                ShooterControlled.INSTANCE.spinUp.schedule();
-
-                //advance once follower finishes
-                if (!follower().isBusy()) {
-                    advance();
-                }
-            case 2:
-                //Shoot ball
-                Intake.INSTANCE.spinUp.schedule();
-                Feeder.INSTANCE.spinUp.schedule();
-
-                new SequentialGroup(
-                        new Delay(2),
-                        new InstantCommand(this::advance)
-                );
-            case 3:
-                //drive to balls, all still spinning
-                follower().followPath(paths.Path2);
-
-                //advance once follower finishes
-                if (!follower().isBusy()) {
-                    advance();
-                }
-            case 4:
-                follower().followPath(paths.Path3);
-
-                //stop feeding when balls in
-                if (ShooterControlled.INSTANCE.ballDetected.get()) {
-                    Feeder.INSTANCE.cutPower.schedule();
-                }
-
-                if (!follower().isBusy()) {
-                    advance();
-                }
-
-            case 5:
-                follower().followPath(paths.Path4);
-
-                Intake.INSTANCE.cutPower.schedule();
-
-
-                if (!follower().isBusy()) {
-                    advance();
-                }
-
-            case 6:
-                //Shoot ball
-                Intake.INSTANCE.spinUp.schedule();
-                Feeder.INSTANCE.spinUp.schedule();
-
-                new SequentialGroup(
-                        new Delay(2),
-                        new InstantCommand(this::advance)
-                );
-
-            case 7:
-                //drive to balls, all still spinning
-                follower().followPath(paths.Path5);
-
-                //advance once follower finishes
-                if (!follower().isBusy()) {
-                    advance();
-                }
-
-            case 8:
-                follower().followPath(paths.Path6);
-
-                //stop feeding when balls in
-                if (ShooterControlled.INSTANCE.ballDetected.get()) {
-                    Feeder.INSTANCE.cutPower.schedule();
-                }
-
-                if (!follower().isBusy()) {
-                    advance();
-                }
-            case 9:
-                follower().followPath(paths.Path7);
-
-                Intake.INSTANCE.cutPower.schedule();
-
-
-                if (!follower().isBusy()) {
-                    advance();
-                }
-            case 10:
-                //Shoot ball
-                Intake.INSTANCE.spinUp.schedule();
-                Feeder.INSTANCE.spinUp.schedule();
-
-                new SequentialGroup(
-                        new Delay(2),
-                        new InstantCommand(this::advance)
-                );
-        }
-
         panelsTelemetry.update(telemetry);
         telemetry.update();
 
