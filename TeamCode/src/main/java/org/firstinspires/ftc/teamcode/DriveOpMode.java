@@ -16,6 +16,7 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
+import dev.nextftc.core.units.Angle;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
@@ -37,8 +38,7 @@ public class DriveOpMode extends NextFTCOpMode {
         addComponents(
                 new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
                 BulkReadComponent.INSTANCE,
-                BindingsComponent.INSTANCE,
-                new PedroComponent(Constants::createFollower)
+                BindingsComponent.INSTANCE
         );
     }
 
@@ -48,6 +48,8 @@ public class DriveOpMode extends NextFTCOpMode {
     private final MotorEx frontRightMotor = new MotorEx("frontRightMotor").brakeMode();
     private final MotorEx backRightMotor = new MotorEx("backRightMotor").reversed().brakeMode();
     private IMUEx imu = new IMUEx("imu", Direction.LEFT, Direction.UP).zeroed();
+
+    private final Angle offset = Globals.alliance == Globals.Alliance.RED ? Angle.fromRad(Globals.pose.getHeading()) : Angle.fromRad(Globals.pose.getHeading() + Math.PI);
 
     @Override
     public void onInit() {
@@ -66,7 +68,7 @@ public class DriveOpMode extends NextFTCOpMode {
                 Gamepads.gamepad1().leftStickY().negate().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().leftStickX().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().rightStickX().mapToRange(doubleValue -> doubleValue * turnScale),
-                new FieldCentric(imu)
+                new FieldCentric(() -> imu.get().plus(offset))
         );
 
         driverControlled.schedule();

@@ -37,7 +37,7 @@ public class ShooterControlled implements Subsystem {
     public Button ballDetected = button(() -> ballInPlace);
 
     private static double ballDetectionDistance = 30;
-    private static double ballDetectionAlpha = 150;
+    private static double ballDetectionAlpha = 250;
 
     private boolean panic = false;
 
@@ -45,7 +45,7 @@ public class ShooterControlled implements Subsystem {
     //Flywheel control system
     public double velocity = 0;
 
-    public static double velocityTarget = 1480;
+    public static double velocityTarget = 1420;
 
     public static PIDCoefficients flywheelPIDCoef = new PIDCoefficients(-0.001, 0.0, 0.0);
     public static BasicFeedforwardParameters flywheelFFCoef = new BasicFeedforwardParameters(-0.000425, 0, -0.04);
@@ -91,7 +91,7 @@ public class ShooterControlled implements Subsystem {
             );
 
 
-            ballInPlace = (ballColour.getDistance(DistanceUnit.MM) < ballDetectionDistance && ballColour.alpha() > ballDetectionAlpha) || panic;
+            ballInPlace = (ballColour.getDistance(DistanceUnit.MM) < ballDetectionDistance || ballColour.alpha() > ballDetectionAlpha) || panic;
 
             if (ballInPlace) {
                 telemetry.addLine(String.format(Locale.ENGLISH,"BALL DETECTED: Dist (mm), Alpha %6.1f %d", ballColour.getDistance(DistanceUnit.MM), ballColour.alpha()));

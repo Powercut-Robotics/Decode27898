@@ -57,81 +57,82 @@ public class RedGoalside9BallCommands extends NextFTCOpMode {
             Path1 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(119.500, 128.000),
-                                    new Pose(96.000, 100.000)
+                                    new Pose(118.000, 128.000),
+                                    new Pose(96.000, 96.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(45))
+                    .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(50))
                     .build();
 
             Path2 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(96.000, 100.000),
-                                    new Pose(104.000, 84.000)
+                                    new Pose(96.000, 96.000),
+                                    new Pose(96.000, 84.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(50), Math.toRadians(0))
                     .build();
 
             Path3 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(104.000, 84.000),
-                                    new Pose(124.000, 84.000)
+                                    new Pose(96.000, 84.000),
+                                    new Pose(128.000, 84.000)
                             )
                     )
-                    .setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             Path4 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(124.000, 84.000),
-                                    new Pose(96.000, 100.000)
+                                    new Pose(128.000, 84.000),
+                                    new Pose(96.000, 96.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(50))
                     .build();
 
             Path5 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(96.000, 100.000),
-                                    new Pose(104.000, 60.000)
+                                    new Pose(96.000, 96.000),
+                                    new Pose(96.000, 60.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(50), Math.toRadians(0))
                     .build();
 
             Path6 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(104.000, 60.000),
-                                    new Pose(124.000, 60.000)
+                                    new Pose(96.000, 60.000),
+                                    new Pose(128.900, 60.000)
                             )
                     )
-                    .setConstantHeadingInterpolation(Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             Path7 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(124.000, 60.000),
-                                    new Pose(96.000, 100.000)
+                                    new Pose(128.900, 60.000),
+                                    new Pose(96.000, 96.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(50))
                     .build();
         }
     }
 
-    private Paths paths = new Paths(follower());
+    private Paths paths;
 
 
     @Override
     public void onInit() {
         Globals.alliance = Globals.Alliance.RED;
+        paths = new Paths(follower());
         follower().setStartingPose(new Pose(119.5, 128, Math.toRadians(45)));
     }
 
@@ -139,63 +140,38 @@ public class RedGoalside9BallCommands extends NextFTCOpMode {
     @Override
     public void onStartButtonPressed() {
         new SequentialGroup(
+                Intake.INSTANCE.spinUp,
+                ShooterControlled.INSTANCE.spinUp,
+
                 //Drive to shoot
-                new ParallelGroup(
-                        new FollowPath(paths.Path1),
-                        ShooterControlled.INSTANCE.spinUp
-                ),
+                new FollowPath(paths.Path1),
+                Intake.INSTANCE.spinUp,
                 //shoot
-                new ParallelGroup(
-                        Intake.INSTANCE.spinUp,
-                        Feeder.INSTANCE.spinUp
-                ),
-                new Delay(4), //shoot complete
+                Feeder.INSTANCE.spinUp,
+                new Delay(2.5), //shoot complete
 
                 //drive to intake
                 new FollowPath(paths.Path2),
-                new ParallelGroup(
-                        //drive into balls
-                        new FollowPath(paths.Path3),
-                        new SequentialGroup(
-                                new ParallelGroup(
-                                        new LambdaCommand().setIsDone(() -> ShooterControlled.INSTANCE.ballDetected.get()),
-                                        new Delay(5) //deadline
-                                ),
-                                Feeder.INSTANCE.cutPower
-                        )
-                ),
+                new FollowPath(paths.Path3),
+                Feeder.INSTANCE.cutPower,
 
                 //drive to shoot, do so
                 new FollowPath(paths.Path4),
-                new ParallelGroup(
-                        Feeder.INSTANCE.spinUp,
-                        new Delay(4)
-                ),
+                Feeder.INSTANCE.spinUp,
+                new Delay(2.5),
 
                 //drive to intake
                 new FollowPath(paths.Path5),
-
-                new ParallelGroup(
-                //drive into balls
-                    new FollowPath(paths.Path6),
-                    new SequentialGroup(
-                            new ParallelGroup(
-                                    new LambdaCommand().setIsDone(() -> ShooterControlled.INSTANCE.ballDetected.get()),
-                                    new Delay(5) //deadline
-                            ),
-                            Feeder.INSTANCE.cutPower
-                    )
-                ),
-
-                        //drive to shoot, do so
-                        new FollowPath(paths.Path7),
-                        new ParallelGroup(
-                                Feeder.INSTANCE.spinUp,
-                                new Delay(4)
-                        )
+                new FollowPath(paths.Path6),
+                Feeder.INSTANCE.cutPower,
 
 
-
+                //drive to shoot, do so
+                new FollowPath(paths.Path7),
+                Feeder.INSTANCE.spinUp,
+                new Delay(4),
+                Intake.INSTANCE.cutPower,
+                Feeder.INSTANCE.cutPower
         ).schedule();
     }
 

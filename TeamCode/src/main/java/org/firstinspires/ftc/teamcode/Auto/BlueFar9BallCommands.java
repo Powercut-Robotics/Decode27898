@@ -136,76 +136,52 @@ public class BlueFar9BallCommands extends NextFTCOpMode {
         }
     }
 
-    private Paths paths = new Paths(follower());
+    private Paths paths;
 
 
     @Override
     public void onInit() {
         Globals.alliance = Globals.Alliance.BLUE;
         follower().setStartingPose(new Pose(24.5, 128, Math.toRadians(135)));
+        paths = new Paths(follower());
     }
 
 
     @Override
     public void onStartButtonPressed() {
         new SequentialGroup(
+                Intake.INSTANCE.spinUp,
+                ShooterControlled.INSTANCE.spinUp,
+
                 //Drive to shoot
-                new ParallelGroup(
-                        new FollowPath(paths.Path1),
-                        ShooterControlled.INSTANCE.spinUp
-                ),
+                new FollowPath(paths.Path1),
+                Intake.INSTANCE.spinUp,
                 //shoot
-                new ParallelGroup(
-                        Intake.INSTANCE.spinUp,
-                        Feeder.INSTANCE.spinUp
-                ),
-                new Delay(4), //shoot complete
+                Feeder.INSTANCE.spinUp,
+                new Delay(2.5), //shoot complete
 
                 //drive to intake
                 new FollowPath(paths.Path2),
-                new ParallelGroup(
-                        //drive into balls
-                        new FollowPath(paths.Path3),
-                        new SequentialGroup(
-                                new ParallelGroup(
-                                        new LambdaCommand().setIsDone(() -> ShooterControlled.INSTANCE.ballDetected.get()),
-                                        new Delay(5) //deadline
-                                ),
-                                Feeder.INSTANCE.cutPower
-                        )
-                ),
+                new FollowPath(paths.Path3),
+                Feeder.INSTANCE.cutPower,
 
                 //drive to shoot, do so
                 new FollowPath(paths.Path4),
-                new ParallelGroup(
-                        Feeder.INSTANCE.spinUp,
-                        new Delay(4)
-                ),
+                Feeder.INSTANCE.spinUp,
+                new Delay(2.5),
 
                 //drive to intake
                 new FollowPath(paths.Path5),
-
-                new ParallelGroup(
-                //drive into balls
-                    new FollowPath(paths.Path6),
-                    new SequentialGroup(
-                            new ParallelGroup(
-                                    new LambdaCommand().setIsDone(() -> ShooterControlled.INSTANCE.ballDetected.get()),
-                                    new Delay(5) //deadline
-                            ),
-                            Feeder.INSTANCE.cutPower
-                    )
-                ),
-
-                        //drive to shoot, do so
-                        new FollowPath(paths.Path7),
-                        new ParallelGroup(
-                                Feeder.INSTANCE.spinUp,
-                                new Delay(4)
-                        )
+                new FollowPath(paths.Path6),
+                Feeder.INSTANCE.cutPower,
 
 
-
+                //drive to shoot, do so
+                new FollowPath(paths.Path7),
+                Feeder.INSTANCE.spinUp,
+                new Delay(4),
+                Intake.INSTANCE.cutPower,
+                Feeder.INSTANCE.cutPower
         ).schedule();
     }
 
