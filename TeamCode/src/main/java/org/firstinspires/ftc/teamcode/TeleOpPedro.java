@@ -60,6 +60,7 @@ public class TeleOpPedro extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
+        PedroComponent.follower().startTeleOpDrive();
         Command driverControlled  = new MecanumDriverControlled(
                 frontLeftMotor,
                 frontRightMotor,
@@ -139,6 +140,7 @@ public class TeleOpPedro extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
+        telemetry.addLine(String.format("XYH %6.1f %6.1f %6.1f (inch, Inch, deg)", PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), PedroComponent.follower().getHeading()));
         panelsTelemetry.update(telemetry);
         telemetry.update();
 

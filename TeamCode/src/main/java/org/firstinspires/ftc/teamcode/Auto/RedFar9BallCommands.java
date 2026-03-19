@@ -9,6 +9,7 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -29,6 +30,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 
+@Disabled
 @Autonomous(name = "Red Far - 9 (Command Based)")
 public class RedFar9BallCommands extends NextFTCOpMode {
 
@@ -144,6 +146,12 @@ public class RedFar9BallCommands extends NextFTCOpMode {
         Globals.alliance = Globals.Alliance.RED;
         follower().setStartingPose(new Pose(119.5, 128, Math.toRadians(45)));
         paths = new Paths(follower());
+
+        Intake.INSTANCE.initialize();
+        Feeder.INSTANCE.initialize();
+
+        panelsTelemetry.addLine("Ready");
+        panelsTelemetry.update();
     }
 
 

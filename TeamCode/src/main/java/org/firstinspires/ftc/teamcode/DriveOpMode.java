@@ -6,6 +6,8 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorGoBildaPinpoint;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.Camera;
 import org.firstinspires.ftc.teamcode.subsystems.Feeder;
@@ -34,6 +36,7 @@ public class DriveOpMode extends NextFTCOpMode {
     private double turnScale = 0.5;
 
     private TelemetryManager panelsTelemetry;
+
     public DriveOpMode() {
         addComponents(
                 new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
@@ -49,12 +52,13 @@ public class DriveOpMode extends NextFTCOpMode {
     private final MotorEx backRightMotor = new MotorEx("backRightMotor").reversed().brakeMode();
     private IMUEx imu = new IMUEx("imu", Direction.LEFT, Direction.UP).zeroed();
 
-    private final Angle offset = Globals.alliance == Globals.Alliance.RED ? Angle.fromRad(Globals.pose.getHeading()) : Angle.fromRad(Globals.pose.getHeading() + Math.PI);
-
     @Override
     public void onInit() {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         gamepad1.setLedColor(0, 255, 0, 120000);
+
+        telemetry.addLine("Ready");
+        telemetry.update();
     }
 
 
@@ -68,7 +72,7 @@ public class DriveOpMode extends NextFTCOpMode {
                 Gamepads.gamepad1().leftStickY().negate().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().leftStickX().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().rightStickX().mapToRange(doubleValue -> doubleValue * turnScale),
-                new FieldCentric(() -> imu.get().plus(offset))
+                new FieldCentric(imu)
         );
 
         driverControlled.schedule();
@@ -85,9 +89,9 @@ public class DriveOpMode extends NextFTCOpMode {
 
 
         Gamepads.gamepad1().dpadDown().not()
-                        .and(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue())
-                        .whenBecomesTrue(Intake.INSTANCE.spinUp)
-                        .whenBecomesTrue(Feeder.INSTANCE.cutPower);
+                .and(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue())
+                .whenBecomesTrue(Intake.INSTANCE.spinUp)
+                .whenBecomesTrue(Feeder.INSTANCE.cutPower);
 
         Gamepads.gamepad1().touchpad()
                 .toggleOnBecomesTrue()
