@@ -19,9 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterControlled;
 
 import dev.nextftc.core.commands.delays.Delay;
-import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
-import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
@@ -31,12 +29,12 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 
 
 @Disabled
-@Autonomous(name = "Red Far - 9 (Command Based)")
-public class RedFar9BallCommands extends NextFTCOpMode {
+@Autonomous(name = "Red Far - Drive", preselectTeleOp = "DriveOpMode")
+public class RedFarDriveCommands extends NextFTCOpMode {
 
 
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
-    public RedFar9BallCommands() {
+    public RedFarDriveCommands() {
         addComponents(
                 new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -133,7 +131,7 @@ public class RedFar9BallCommands extends NextFTCOpMode {
                                     new Pose(112.000, 111.327)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(180))
                     .build();
         }
     }
@@ -144,11 +142,8 @@ public class RedFar9BallCommands extends NextFTCOpMode {
     @Override
     public void onInit() {
         Globals.alliance = Globals.Alliance.RED;
-        follower().setStartingPose(new Pose(119.5, 128, Math.toRadians(45)));
+        follower().setStartingPose(new Pose(128, 59.898, Math.toRadians(0)));
         paths = new Paths(follower());
-
-        Intake.INSTANCE.initialize();
-        Feeder.INSTANCE.initialize();
 
         panelsTelemetry.addLine("Ready");
         panelsTelemetry.update();
@@ -157,40 +152,7 @@ public class RedFar9BallCommands extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
-        new SequentialGroup(
-                Intake.INSTANCE.spinUp,
-                ShooterControlled.INSTANCE.spinUp,
-
-                //Drive to shoot
-                new FollowPath(paths.Path1),
-                Intake.INSTANCE.spinUp,
-                //shoot
-                Feeder.INSTANCE.spinUp,
-                new Delay(2.5), //shoot complete
-
-                //drive to intake
-                new FollowPath(paths.Path2),
-                new FollowPath(paths.Path3),
-                Feeder.INSTANCE.cutPower,
-
-                //drive to shoot, do so
-                new FollowPath(paths.Path4),
-                Feeder.INSTANCE.spinUp,
-                new Delay(2.5),
-
-                //drive to intake
-                new FollowPath(paths.Path5),
-                new FollowPath(paths.Path6),
-                Feeder.INSTANCE.cutPower,
-
-
-                //drive to shoot, do so
-                new FollowPath(paths.Path7),
-                Feeder.INSTANCE.spinUp,
-                new Delay(4),
-                Intake.INSTANCE.cutPower,
-                Feeder.INSTANCE.cutPower
-        ).schedule();
+        new FollowPath(paths.Path1).schedule();
     }
 
     @Override

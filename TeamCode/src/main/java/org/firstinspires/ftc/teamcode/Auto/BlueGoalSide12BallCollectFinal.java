@@ -9,7 +9,6 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -19,9 +18,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterControlled;
 
 import dev.nextftc.core.commands.delays.Delay;
-import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
-import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
@@ -30,13 +27,12 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 
-@Disabled
-@Autonomous(name = "Blue Far - 9 (Command Based)")
-public class BlueFar9BallCommands extends NextFTCOpMode {
+@Autonomous(name = "Blue Goalside - 12 Don't Shoot Final 3", preselectTeleOp = "DriveOpMode")
+public class BlueGoalSide12BallCollectFinal extends NextFTCOpMode {
 
 
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
-    public BlueFar9BallCommands() {
+    public BlueGoalSide12BallCollectFinal() {
         addComponents(
                 new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -54,86 +50,97 @@ public class BlueFar9BallCommands extends NextFTCOpMode {
         public PathChain Path6;
         public PathChain Path7;
         public PathChain Path8;
+        public PathChain Path9;
 
         public Paths(Follower follower) {
             Path1 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(56.174, 6.784),
-                                    new Pose(50.633, 92.469)
+                                    new Pose(26.000, 128.000),
+                                    new Pose(43.000, 94.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                    .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(125))
                     .build();
 
             Path2 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(50.633, 92.469),
-                                    new Pose(31.592, 111.612)
+                                    new Pose(43.000, 94.000),
+                                    new Pose(48.000, 84.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(135))
+                    .setLinearHeadingInterpolation(Math.toRadians(125), Math.toRadians(180))
                     .build();
 
             Path3 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(31.592, 111.612),
-                                    new Pose(49.429, 83.612)
+                                    new Pose(48.000, 84.000),
+                                    new Pose(16.000, 84.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             Path4 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(49.429, 83.612),
-                                    new Pose(17.306, 83.673)
+                                    new Pose(16.000, 84.000),
+                                    new Pose(45.000, 92.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(125))
                     .build();
 
             Path5 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(17.306, 83.673),
-                                    new Pose(31.714, 111.265)
+                                    new Pose(45.000, 92.000),
+                                    new Pose(48.000, 59.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                    .setLinearHeadingInterpolation(Math.toRadians(125), Math.toRadians(180))
                     .build();
 
             Path6 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(31.714, 111.265),
-                                    new Pose(45.694, 59.735)
-                            )
-                    )
-                    .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-                    .build();
-
-            Path7 = follower.pathBuilder()
-                    .addPath(
-                            new BezierLine(
-                                    new Pose(45.694, 59.735),
-                                    new Pose(16.286, 59.898)
+                                    new Pose(48.000, 59.000),
+                                    new Pose(13.500, 59.000)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
+            Path7 = follower.pathBuilder()
+                    .addPath(
+                            new BezierLine(
+                                    new Pose(13.500, 59.000),
+                                    new Pose(45.000, 92.000)
+                            )
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(125))
+                    .build();
+
             Path8 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(16.286, 59.898),
-                                    new Pose(31.918, 111.327)
+                                    new Pose(45.000, 92.000),
+                                    new Pose(48.000, 35.500)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                    .setLinearHeadingInterpolation(Math.toRadians(125), Math.toRadians(180))
+                    .build();
+
+            Path9 = follower.pathBuilder()
+                    .addPath(
+                            new BezierLine(
+                                    new Pose(48.000, 35.500),
+                                    new Pose(13.500, 35.500)
+                            )
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
         }
     }
@@ -152,21 +159,25 @@ public class BlueFar9BallCommands extends NextFTCOpMode {
 
         panelsTelemetry.addLine("Ready");
         panelsTelemetry.update();
+        telemetry.addLine("Ready");
+        telemetry.update();
     }
 
 
     @Override
     public void onStartButtonPressed() {
+        Intake.INSTANCE.spinUp.schedule();
         new SequentialGroup(
                 Intake.INSTANCE.spinUp,
                 ShooterControlled.INSTANCE.spinUp,
 
+                new Delay(1),
                 //Drive to shoot
                 new FollowPath(paths.Path1),
                 Intake.INSTANCE.spinUp,
                 //shoot
                 Feeder.INSTANCE.spinUp,
-                new Delay(2.5), //shoot complete
+                new Delay(3.5), //shoot complete
 
                 //drive to intake
                 new FollowPath(paths.Path2),
@@ -176,7 +187,7 @@ public class BlueFar9BallCommands extends NextFTCOpMode {
                 //drive to shoot, do so
                 new FollowPath(paths.Path4),
                 Feeder.INSTANCE.spinUp,
-                new Delay(2.5),
+                new Delay(3.5),
 
                 //drive to intake
                 new FollowPath(paths.Path5),
@@ -187,9 +198,15 @@ public class BlueFar9BallCommands extends NextFTCOpMode {
                 //drive to shoot, do so
                 new FollowPath(paths.Path7),
                 Feeder.INSTANCE.spinUp,
-                new Delay(4),
-                Intake.INSTANCE.cutPower,
-                Feeder.INSTANCE.cutPower
+                new Delay(3.5),
+
+                new FollowPath(paths.Path8),
+                new FollowPath(paths.Path9),
+                Feeder.INSTANCE.cutPower,
+
+                //drive to shoot, do so
+
+                ShooterControlled.INSTANCE.cutPower
         ).schedule();
     }
 

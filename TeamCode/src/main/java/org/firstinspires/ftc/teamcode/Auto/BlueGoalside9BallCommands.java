@@ -29,7 +29,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 
-@Autonomous(name = "Blue Goalside - 9 (Command Based)")
+@Autonomous(name = "Blue Goalside - 9", preselectTeleOp = "DriveOpMode")
 public class BlueGoalside9BallCommands extends NextFTCOpMode {
 
 

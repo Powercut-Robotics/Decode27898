@@ -18,10 +18,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterControlled;
 
 import dev.nextftc.core.commands.delays.Delay;
-import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
-import dev.nextftc.core.commands.utility.InstantCommand;
-import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
@@ -30,12 +27,12 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 
-@Autonomous(name = "Red Goalside - 9", preselectTeleOp = "DriveOpMode")
-public class RedGoalside9BallCommands extends NextFTCOpMode {
+@Autonomous(name = "Red Goalside - 12", preselectTeleOp = "DriveOpMode")
+public class RedGoalside12BallCommands extends NextFTCOpMode {
 
 
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
-    public RedGoalside9BallCommands() {
+    public RedGoalside12BallCommands() {
         addComponents(
                 new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -53,6 +50,9 @@ public class RedGoalside9BallCommands extends NextFTCOpMode {
         public PathChain Path6;
         public PathChain Path7;
         public PathChain Path8;
+        public PathChain Path9;
+        public PathChain Path10;
+        public PathChain Path11;
 
         public Paths(Follower follower) {
             Path1 = follower.pathBuilder()
@@ -109,7 +109,7 @@ public class RedGoalside9BallCommands extends NextFTCOpMode {
                     .addPath(
                             new BezierLine(
                                     new Pose(96.000, 59.000),
-                                    new Pose(129.000, 59.000)
+                                    new Pose(130.000, 59.000)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
@@ -126,6 +126,36 @@ public class RedGoalside9BallCommands extends NextFTCOpMode {
                     .build();
 
             Path8 = follower.pathBuilder()
+                    .addPath(
+                            new BezierLine(
+                                    new Pose(100.000, 92.000),
+                                    new Pose(96.000, 34.500)
+                            )
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(55), Math.toRadians(0))
+                    .build();
+
+            Path9 = follower.pathBuilder()
+                    .addPath(
+                            new BezierLine(
+                                    new Pose(96.000, 34.500),
+                                    new Pose(132.000, 34.500)
+                            )
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    .build();
+
+            Path10 = follower.pathBuilder()
+                    .addPath(
+                            new BezierLine(
+                                    new Pose(132.000, 34.500),
+                                    new Pose(100.000, 92.000)
+                            )
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(55))
+                    .build();
+
+            Path11 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
                                     new Pose(100.000, 92.000),
@@ -191,7 +221,18 @@ public class RedGoalside9BallCommands extends NextFTCOpMode {
                 new FollowPath(paths.Path7),
                 Feeder.INSTANCE.spinUp,
                 new Delay(3.5),
+
                 new FollowPath(paths.Path8),
+                new FollowPath(paths.Path9),
+                Feeder.INSTANCE.cutPower,
+
+                //drive to shoot, do so
+                new FollowPath(paths.Path10),
+                Feeder.INSTANCE.spinUp,
+                new Delay(3.5),
+
+
+                new FollowPath(paths.Path11),
                 Intake.INSTANCE.cutPower,
                 Feeder.INSTANCE.cutPower,
                 ShooterControlled.INSTANCE.cutPower

@@ -1,14 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.icu.text.TimeZoneFormat;
-
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorGoBildaPinpoint;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.Camera;
 import org.firstinspires.ftc.teamcode.subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -18,8 +13,6 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
-import dev.nextftc.core.units.Angle;
-import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
@@ -32,8 +25,8 @@ import dev.nextftc.hardware.impl.MotorEx;
 @TeleOp(name = "Drive w/ Cam")
 public class DriveOpMode extends NextFTCOpMode {
 
-    private double xyScale = 0.7;
-    private double turnScale = 0.5;
+    private double xyScale = 0.8;
+    private double turnScale = 0.6;
 
     private TelemetryManager panelsTelemetry;
 
@@ -50,6 +43,9 @@ public class DriveOpMode extends NextFTCOpMode {
     private final MotorEx backLeftMotor = new MotorEx("backLeftMotor").reversed().brakeMode();
     private final MotorEx frontRightMotor = new MotorEx("frontRightMotor").brakeMode();
     private final MotorEx backRightMotor = new MotorEx("backRightMotor").reversed().brakeMode();
+
+
+
     private IMUEx imu = new IMUEx("imu", Direction.LEFT, Direction.UP).zeroed();
 
     @Override
@@ -124,6 +120,8 @@ public class DriveOpMode extends NextFTCOpMode {
         Gamepads.gamepad1().triangle()
                 .whenBecomesTrue(Feeder.INSTANCE.spinUp)
                 .whenBecomesTrue(ShooterControlled.INSTANCE.spinUp)
+                .whenBecomesTrue(Feeder.INSTANCE.setAngle0)
+                .whenBecomesFalse(Feeder.INSTANCE.setAngle90)
                 .whenBecomesFalse(Feeder.INSTANCE.cutPower);
 
         Gamepads.gamepad1().triangle()
