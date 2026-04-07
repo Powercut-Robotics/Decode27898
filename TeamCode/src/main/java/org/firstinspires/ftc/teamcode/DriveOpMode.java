@@ -4,7 +4,6 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.subsystems.Camera;
 import org.firstinspires.ftc.teamcode.subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterControlled;
@@ -25,28 +24,28 @@ import dev.nextftc.hardware.impl.MotorEx;
 @TeleOp(name = "Drive w/ Cam")
 public class DriveOpMode extends NextFTCOpMode {
 
-    private double xyScale = 0.8;
-    private double turnScale = 0.6;
+    private double xyScale = 1.0;
+    private double turnScale = 0.8;
 
     private TelemetryManager panelsTelemetry;
 
     public DriveOpMode() {
         addComponents(
-                new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
+                new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
     }
 
     // change the names and directions to suit your robot
-    private final MotorEx frontLeftMotor = new MotorEx("frontLeftMotor").reversed().brakeMode();
-    private final MotorEx backLeftMotor = new MotorEx("backLeftMotor").reversed().brakeMode();
-    private final MotorEx frontRightMotor = new MotorEx("frontRightMotor").brakeMode();
-    private final MotorEx backRightMotor = new MotorEx("backRightMotor").reversed().brakeMode();
+    private final MotorEx frontLeftMotor = new MotorEx("frontleft").brakeMode();
+    private final MotorEx backLeftMotor = new MotorEx("backleft").brakeMode();
+    private final MotorEx frontRightMotor = new MotorEx("frontright").reversed().brakeMode();
+    private final MotorEx backRightMotor = new MotorEx("backright").reversed().brakeMode();
 
 
 
-    private IMUEx imu = new IMUEx("imu", Direction.LEFT, Direction.UP).zeroed();
+    private IMUEx imu = new IMUEx("imu", Direction.DOWN, Direction.LEFT).zeroed();
 
     @Override
     public void onInit() {
@@ -67,8 +66,8 @@ public class DriveOpMode extends NextFTCOpMode {
                 backRightMotor,
                 Gamepads.gamepad1().leftStickY().negate().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().leftStickX().mapToRange(doubleValue -> doubleValue * xyScale),
-                Gamepads.gamepad1().rightStickX().mapToRange(doubleValue -> doubleValue * turnScale),
-                new FieldCentric(imu)
+                Gamepads.gamepad1().rightStickX().mapToRange(doubleValue -> doubleValue * turnScale)
+                //, new FieldCentric(imu)
         );
 
         driverControlled.schedule();
@@ -89,39 +88,12 @@ public class DriveOpMode extends NextFTCOpMode {
                 .whenBecomesTrue(Intake.INSTANCE.spinUp)
                 .whenBecomesTrue(Feeder.INSTANCE.cutPower);
 
-        Gamepads.gamepad1().touchpad()
-                .toggleOnBecomesTrue()
-                .whenBecomesTrue(ShooterControlled.INSTANCE.sensorPanic)
-                .whenBecomesTrue(new InstantCommand(() -> gamepad1.setLedColor(255, 0, 0, 120000)))
-                .whenBecomesFalse(ShooterControlled.INSTANCE.sensorUnPanic)
-                .whenBecomesFalse(new InstantCommand(() -> gamepad1.setLedColor(0, 255, 0, 120000)));
-
-
         Gamepads.gamepad1().share()
                 .whenBecomesTrue(new InstantCommand(() -> imu.zeroed()));
-
-
-        //DELETE SECTION IF ISSUES SHOOTING W/O HOLDING TRIANGLE
-            //feeder when intaking
-            ShooterControlled.INSTANCE.ballDetected.not()
-                    .and(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue())
-                    .whenTrue(Feeder.INSTANCE.spinUp);
-
-        ShooterControlled.INSTANCE.ballDetected.not()
-                .and(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue().not())
-                .whenBecomesTrue(Feeder.INSTANCE.cutPower);
-
-            //if we detect ball And Not holdining triangle, cut feeder
-            ShooterControlled.INSTANCE.ballDetected
-                    .and(Gamepads.gamepad1().triangle().not())
-                    .whenBecomesTrue(Feeder.INSTANCE.cutPower);
-        //
 
         Gamepads.gamepad1().triangle()
                 .whenBecomesTrue(Feeder.INSTANCE.spinUp)
                 .whenBecomesTrue(ShooterControlled.INSTANCE.spinUp)
-                .whenBecomesTrue(Feeder.INSTANCE.setAngle0)
-                .whenBecomesFalse(Feeder.INSTANCE.setAngle90)
                 .whenBecomesFalse(Feeder.INSTANCE.cutPower);
 
         Gamepads.gamepad1().triangle()
@@ -132,11 +104,8 @@ public class DriveOpMode extends NextFTCOpMode {
         Gamepads.gamepad1().cross()
                 .whenBecomesTrue(ShooterControlled.INSTANCE.spinUp);
 
-
         Gamepads.gamepad1().circle()
                 .whenBecomesTrue(ShooterControlled.INSTANCE.cutPower);
-
-
     }
 
     @Override

@@ -10,9 +10,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.Camera;
 import org.firstinspires.ftc.teamcode.subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterControlled;
@@ -34,7 +32,7 @@ public class RedGoalside12BallCommands extends NextFTCOpMode {
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     public RedGoalside12BallCommands() {
         addComponents(
-                new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
+                new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE,
                 new PedroComponent(Constants::createFollower)
@@ -172,7 +170,7 @@ public class RedGoalside12BallCommands extends NextFTCOpMode {
 
     @Override
     public void onInit() {
-        Globals.alliance = Globals.Alliance.RED;
+
         paths = new Paths(follower());
         follower().setStartingPose(new Pose(119.5, 128, Math.toRadians(45)));
 
@@ -243,7 +241,5 @@ public class RedGoalside12BallCommands extends NextFTCOpMode {
     public void onUpdate() {
         panelsTelemetry.update(telemetry);
         telemetry.update();
-
-        Globals.pose = follower().getPose();
     }
 }

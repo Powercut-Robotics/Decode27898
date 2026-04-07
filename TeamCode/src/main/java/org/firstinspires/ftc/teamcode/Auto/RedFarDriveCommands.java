@@ -11,15 +11,11 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.Camera;
 import org.firstinspires.ftc.teamcode.subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterControlled;
 
-import dev.nextftc.core.commands.delays.Delay;
-import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
@@ -36,7 +32,7 @@ public class RedFarDriveCommands extends NextFTCOpMode {
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     public RedFarDriveCommands() {
         addComponents(
-                new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE, Camera.INSTANCE),
+                new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE,
                 new PedroComponent(Constants::createFollower)
@@ -141,7 +137,6 @@ public class RedFarDriveCommands extends NextFTCOpMode {
 
     @Override
     public void onInit() {
-        Globals.alliance = Globals.Alliance.RED;
         follower().setStartingPose(new Pose(128, 59.898, Math.toRadians(0)));
         paths = new Paths(follower());
 
@@ -159,7 +154,5 @@ public class RedFarDriveCommands extends NextFTCOpMode {
     public void onUpdate() {
         panelsTelemetry.update(telemetry);
         telemetry.update();
-
-        Globals.pose = follower().getPose();
     }
 }

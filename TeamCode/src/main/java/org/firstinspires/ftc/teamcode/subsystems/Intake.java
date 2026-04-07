@@ -33,7 +33,7 @@ public class Intake implements Subsystem {
 
 
 
-    private final MotorEx intakeMotor = new MotorEx("intakeMotor")
+    private final MotorEx intakeMotor = new MotorEx("intake motor")
             .floatMode()
             .reversed();
 
