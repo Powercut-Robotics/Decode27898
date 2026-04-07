@@ -21,7 +21,7 @@ import dev.nextftc.hardware.impl.Direction;
 import dev.nextftc.hardware.impl.IMUEx;
 import dev.nextftc.hardware.impl.MotorEx;
 
-@TeleOp(name = "Drive w/ Cam")
+@TeleOp(name = "Drive")
 public class DriveOpMode extends NextFTCOpMode {
 
     private double xyScale = 1.0;
