@@ -11,9 +11,9 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.Feeder;
+import org.firstinspires.ftc.teamcode.subsystems.Loader;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterControlled;
+import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.SequentialGroup;
@@ -32,7 +32,7 @@ public class RedGoalSide12BallCollectFinal extends NextFTCOpMode {
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     public RedGoalSide12BallCollectFinal() {
         addComponents(
-                new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE),
+                new SubsystemComponent(Shooter.INSTANCE, Loader.INSTANCE, Intake.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE,
                 new PedroComponent(Constants::createFollower)
@@ -155,7 +155,7 @@ public class RedGoalSide12BallCollectFinal extends NextFTCOpMode {
         follower().setStartingPose(new Pose(119.5, 128, Math.toRadians(45)));
 
         Intake.INSTANCE.initialize();
-        Feeder.INSTANCE.initialize();
+        Loader.INSTANCE.initialize();
 
         panelsTelemetry.addLine("Ready");
         panelsTelemetry.update();
@@ -169,44 +169,44 @@ public class RedGoalSide12BallCollectFinal extends NextFTCOpMode {
         Intake.INSTANCE.spinUp.schedule();
         new SequentialGroup(
                 Intake.INSTANCE.spinUp,
-                ShooterControlled.INSTANCE.spinUp,
+                Shooter.INSTANCE.spinUpMid,
 
                 new Delay(1),
                 //Drive to shoot
                 new FollowPath(paths.Path1),
                 Intake.INSTANCE.spinUp,
                 //shoot
-                Feeder.INSTANCE.spinUp,
+                Loader.INSTANCE.spinUp,
                 new Delay(3.5), //shoot complete
 
                 //drive to intake
                 new FollowPath(paths.Path2),
                 new FollowPath(paths.Path3),
-                Feeder.INSTANCE.cutPower,
+                Loader.INSTANCE.cutPower,
 
                 //drive to shoot, do so
                 new FollowPath(paths.Path4),
-                Feeder.INSTANCE.spinUp,
+                Loader.INSTANCE.spinUp,
                 new Delay(3.5),
 
                 //drive to intake
                 new FollowPath(paths.Path5),
                 new FollowPath(paths.Path6),
-                Feeder.INSTANCE.cutPower,
+                Loader.INSTANCE.cutPower,
 
 
                 //drive to shoot, do so
                 new FollowPath(paths.Path7),
-                Feeder.INSTANCE.spinUp,
+                Loader.INSTANCE.spinUp,
                 new Delay(3.5),
 
                 new FollowPath(paths.Path8),
                 new FollowPath(paths.Path9),
-                Feeder.INSTANCE.cutPower,
+                Loader.INSTANCE.cutPower,
 
                 //drive to shoot, do so
 
-                ShooterControlled.INSTANCE.cutPower
+                Shooter.INSTANCE.cutPower
         ).schedule();
     }
 

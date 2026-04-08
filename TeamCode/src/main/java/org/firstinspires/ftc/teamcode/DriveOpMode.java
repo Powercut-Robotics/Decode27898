@@ -4,9 +4,9 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.subsystems.Feeder;
+import org.firstinspires.ftc.teamcode.subsystems.Loader;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterControlled;
+import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
@@ -15,7 +15,6 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
-import dev.nextftc.hardware.driving.FieldCentric;
 import dev.nextftc.hardware.driving.MecanumDriverControlled;
 import dev.nextftc.hardware.impl.Direction;
 import dev.nextftc.hardware.impl.IMUEx;
@@ -24,14 +23,14 @@ import dev.nextftc.hardware.impl.MotorEx;
 @TeleOp(name = "Drive")
 public class DriveOpMode extends NextFTCOpMode {
 
-    private double xyScale = 1.0;
-    private double turnScale = 0.8;
+    private double xyScale = 0.75;
+    private double turnScale = 0.75;
 
     private TelemetryManager panelsTelemetry;
 
     public DriveOpMode() {
         addComponents(
-                new SubsystemComponent(ShooterControlled.INSTANCE, Feeder.INSTANCE, Intake.INSTANCE),
+                new SubsystemComponent(Shooter.INSTANCE, Loader.INSTANCE, Intake.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
@@ -71,41 +70,55 @@ public class DriveOpMode extends NextFTCOpMode {
         );
 
         driverControlled.schedule();
+        Shooter.INSTANCE.spinUpMid.schedule();
 
-        //INTAKE COMMANDS
-        Gamepads.gamepad1().dpadDown()
-                .whenBecomesTrue(Intake.INSTANCE.pushOut)
-                .whenBecomesTrue(Feeder.INSTANCE.feedOut);
+        //Drive scales
+        Gamepads.gamepad1().rightBumper()
+                .whenBecomesTrue(new InstantCommand(() -> xyScale = 0.25))
+                .whenBecomesTrue(new InstantCommand(() -> turnScale = 0.25))
+                .whenBecomesTrue(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().setLedColor(255, 0, 0, 120000)));
 
-        Gamepads.gamepad1().dpadDown()
-                .or(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue())
-                .whenBecomesFalse(Intake.INSTANCE.cutPower)
-                .whenBecomesFalse(Feeder.INSTANCE.cutPower);
+        Gamepads.gamepad1().leftBumper()
+                .whenBecomesTrue(new InstantCommand(() -> xyScale = 1))
+                .whenBecomesTrue(new InstantCommand(() -> turnScale = 1))
+                .whenBecomesTrue(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().setLedColor(0, 0, 255, 120000)));
 
-
-        Gamepads.gamepad1().dpadDown().not()
-                .and(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue())
-                .whenBecomesTrue(Intake.INSTANCE.spinUp)
-                .whenBecomesTrue(Feeder.INSTANCE.cutPower);
+        Gamepads.gamepad1().leftBumper()
+                .or(Gamepads.gamepad1().rightBumper())
+                    .whenFalse(new InstantCommand(() -> xyScale = 0.75))
+                    .whenFalse(new InstantCommand(() -> xyScale = 0.75))
+                    .whenBecomesFalse(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().setLedColor(0, 255, 0, 120000)));
 
         Gamepads.gamepad1().share()
-                .whenBecomesTrue(new InstantCommand(() -> imu.zeroed()));
+                .whenBecomesTrue(new InstantCommand(() -> imu.zeroed()))
+                .whenBecomesTrue(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().rumble(250)));
+        //INTAKE COMMANDS
 
-        Gamepads.gamepad1().triangle()
-                .whenBecomesTrue(Feeder.INSTANCE.spinUp)
-                .whenBecomesTrue(ShooterControlled.INSTANCE.spinUp)
-                .whenBecomesFalse(Feeder.INSTANCE.cutPower);
+        Gamepads.gamepad2().dpadUp()
+                .whenBecomesTrue(Shooter.INSTANCE.spinUpHigh);
 
-        Gamepads.gamepad1().triangle()
-                .and(Gamepads.gamepad1().dpadUp().toggleOnBecomesTrue().not())
+        Gamepads.gamepad2().dpadRight()
+                .whenBecomesTrue(Shooter.INSTANCE.spinUpMid);
+
+        Gamepads.gamepad2().dpadDown()
+                .whenBecomesTrue(Shooter.INSTANCE.spinUpLow);
+
+
+        Gamepads.gamepad2().rightBumper()
                 .whenBecomesTrue(Intake.INSTANCE.spinUp)
                 .whenBecomesFalse(Intake.INSTANCE.cutPower);
 
-        Gamepads.gamepad1().cross()
-                .whenBecomesTrue(ShooterControlled.INSTANCE.spinUp);
+        Gamepads.gamepad2().square()
+                .whenBecomesTrue(Loader.INSTANCE.spinUp);
 
-        Gamepads.gamepad1().circle()
-                .whenBecomesTrue(ShooterControlled.INSTANCE.cutPower);
+        Gamepads.gamepad2().triangle()
+                .whenBecomesTrue(Loader.INSTANCE.feedOut)
+                .whenBecomesTrue(Intake.INSTANCE.pushOut);
+
+        Gamepads.gamepad2().square()
+                .or(Gamepads.gamepad2().triangle())
+                .whenFalse(Intake.INSTANCE.cutPower)
+                .whenFalse(Loader.INSTANCE.cutPower);
     }
 
     @Override

@@ -4,15 +4,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
 
-import static dev.nextftc.bindings.Bindings.*;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-import java.util.Locale;
-
-import dev.nextftc.bindings.Button;
 import dev.nextftc.control.ControlSystem;
 import dev.nextftc.control.KineticState;
 import dev.nextftc.control.feedback.PIDCoefficients;
@@ -24,10 +16,10 @@ import dev.nextftc.ftc.ActiveOpMode;
 import dev.nextftc.hardware.impl.MotorEx;
 
 @Configurable
-public class ShooterControlled implements Subsystem {
-    public static final ShooterControlled INSTANCE = new ShooterControlled();
+public class Shooter implements Subsystem {
+    public static final Shooter INSTANCE = new Shooter();
     private TelemetryManager telemetry;
-    private ShooterControlled() {
+    private Shooter() {
 
     }
 
@@ -35,7 +27,9 @@ public class ShooterControlled implements Subsystem {
     //Flywheel control system
     public double velocity = 0;
 
-    public static double velocityTarget = 1420;
+    public static double velocityTargetLow = 1000;
+    public static double velocityTargetMid = 1420;
+    public static double velocityTargetHigh = 1800;
 
     public static PIDCoefficients flywheelPIDCoef = new PIDCoefficients(-0.001, 0.0, 0.0);
     public static BasicFeedforwardParameters flywheelFFCoef = new BasicFeedforwardParameters(-0.000425, 0, -0.04);
@@ -55,7 +49,9 @@ public class ShooterControlled implements Subsystem {
 
 
     //Flywheel commands
-    public Command spinUp = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, velocityTarget))).requires(this);
+    public Command spinUpLow = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, velocityTargetLow))).requires(this);
+    public Command spinUpMid = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, velocityTargetMid))).requires(this);
+    public Command spinUpHigh = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, velocityTargetHigh))).requires(this);
 
 
     public Command cutPower = new InstantCommand(() -> flywheelControlSystem.setGoal(new KineticState(0.0, 0.0))).requires(this);
@@ -79,7 +75,8 @@ public class ShooterControlled implements Subsystem {
 
             double power = flywheelControlSystem.calculate(new KineticState(
                     flywheelMotor.getCurrentPosition(),
-                    -flywheelMotor.getVelocity()));
+                    -flywheelMotor.getVelocity())
+            );
 
 
             flywheelMotor.setPower(power);
