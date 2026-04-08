@@ -77,7 +77,7 @@ public class BlueGoalside12BallCommands extends NextFTCOpMode {
                     .addPath(
                             new BezierLine(
                                     new Pose(48.000, 84.000),
-                                    new Pose(16.000, 84.000)
+                                    new Pose(14.000, 84.000)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
@@ -107,7 +107,7 @@ public class BlueGoalside12BallCommands extends NextFTCOpMode {
                     .addPath(
                             new BezierLine(
                                     new Pose(48.000, 59.000),
-                                    new Pose(13.500, 59.000)
+                                    new Pose(11.000, 59.000)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
@@ -137,7 +137,7 @@ public class BlueGoalside12BallCommands extends NextFTCOpMode {
                     .addPath(
                             new BezierLine(
                                     new Pose(48.000, 35.500),
-                                    new Pose(13.500, 35.500)
+                                    new Pose(11.000, 35.500)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
@@ -190,48 +190,50 @@ public class BlueGoalside12BallCommands extends NextFTCOpMode {
                 Intake.INSTANCE.spinUp,
                 Shooter.INSTANCE.spinUpMid,
 
-                new Delay(1),
+                new Delay(0.5),
                 //Drive to shoot
                 new FollowPath(paths.Path1),
                 Intake.INSTANCE.spinUp,
                 //shoot
                 Loader.INSTANCE.spinUp,
-                new Delay(3.5), //shoot complete
+                new Delay(1.5), //shoot complete
+                Loader.INSTANCE.cutPower,
 
                 //drive to intake
                 new FollowPath(paths.Path2),
                 new FollowPath(paths.Path3),
-                Loader.INSTANCE.cutPower,
+
 
                 //drive to shoot, do so
                 new FollowPath(paths.Path4),
                 Loader.INSTANCE.spinUp,
-                new Delay(3.5),
+                new Delay(1.5),
+                Loader.INSTANCE.cutPower,
 
                 //drive to intake
                 new FollowPath(paths.Path5),
                 new FollowPath(paths.Path6),
-                Loader.INSTANCE.cutPower,
 
 
                 //drive to shoot, do so
                 new FollowPath(paths.Path7),
                 Loader.INSTANCE.spinUp,
-                new Delay(3.5),
+                new Delay(1.5),
+                Loader.INSTANCE.cutPower,
+
 
                 new FollowPath(paths.Path8),
                 new FollowPath(paths.Path9),
-                Loader.INSTANCE.cutPower,
+
 
                 //drive to shoot, do so
                 new FollowPath(paths.Path10),
                 Loader.INSTANCE.spinUp,
-                new Delay(3.5),
-
+                new Delay(1.5),
+                Loader.INSTANCE.cutPower,
 
                 new FollowPath(paths.Path11),
                 Intake.INSTANCE.cutPower,
-                Loader.INSTANCE.cutPower,
                 Shooter.INSTANCE.cutPower
         ).schedule();
     }
