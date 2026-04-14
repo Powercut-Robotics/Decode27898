@@ -22,7 +22,8 @@ public class Loader implements Subsystem {
 
 
     private final MotorEx loaderMotor = new MotorEx("loader motor")
-            .brakeMode();
+            .brakeMode()
+            .reversed();
 
 
     public Command spinUp = new InstantCommand(() -> power = targetPower).requires(this);

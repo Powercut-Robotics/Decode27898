@@ -28,11 +28,11 @@ public class Shooter implements Subsystem {
     public double velocity = 0;
 
     public static double velocityTargetLow = 1000;
-    public static double velocityTargetMid = 1420;
-    public static double velocityTargetHigh = 1800;
+    public static double velocityTargetMid = 1350;
+    public static double velocityTargetHigh = 1500;
 
     public static PIDCoefficients flywheelPIDCoef = new PIDCoefficients(-0.001, 0.0, 0.0);
-    public static BasicFeedforwardParameters flywheelFFCoef = new BasicFeedforwardParameters(-0.000425, 0, -0.04);
+    public static BasicFeedforwardParameters flywheelFFCoef = new BasicFeedforwardParameters(-0.0005, 0, -0.0275);
 
     private static final ControlSystem flywheelControlSystem = ControlSystem.builder()
             .velPid(flywheelPIDCoef)
@@ -41,10 +41,12 @@ public class Shooter implements Subsystem {
 
 
     private final MotorEx flywheelMotor = new MotorEx("shooter motor")
-            .floatMode();
+            .floatMode()
+            .reversed();
 
     private final MotorEx flywheelMotorTwo = new MotorEx("shooter motor2")
-            .floatMode();
+            .floatMode()
+            .reversed();
 
 
 
@@ -71,11 +73,11 @@ public class Shooter implements Subsystem {
     @Override
     public void periodic() {
         if (ActiveOpMode.isStarted()) {
-            velocity = -flywheelMotor.getVelocity();
+            velocity = flywheelMotor.getVelocity();
 
             double power = flywheelControlSystem.calculate(new KineticState(
                     flywheelMotor.getCurrentPosition(),
-                    -flywheelMotor.getVelocity())
+                    flywheelMotor.getVelocity())
             );
 
 

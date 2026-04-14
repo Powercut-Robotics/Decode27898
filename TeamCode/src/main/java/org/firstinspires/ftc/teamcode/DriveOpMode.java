@@ -15,6 +15,7 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
+import dev.nextftc.hardware.driving.FieldCentric;
 import dev.nextftc.hardware.driving.MecanumDriverControlled;
 import dev.nextftc.hardware.impl.Direction;
 import dev.nextftc.hardware.impl.IMUEx;
@@ -66,22 +67,22 @@ public class DriveOpMode extends NextFTCOpMode {
                 Gamepads.gamepad1().leftStickY().negate().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().leftStickX().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().rightStickX().mapToRange(doubleValue -> doubleValue * turnScale)
-                //, new FieldCentric(imu)
+                , new FieldCentric(imu)
         );
 
         driverControlled.schedule();
         Shooter.INSTANCE.spinUpMid.schedule();
 
         //Drive scales
-        Gamepads.gamepad1().rightBumper()
-                .whenBecomesTrue(new InstantCommand(() -> xyScale = 0.25))
-                .whenBecomesTrue(new InstantCommand(() -> turnScale = 0.25))
-                .whenBecomesTrue(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().setLedColor(255, 0, 0, 120000)));
-
-        Gamepads.gamepad1().leftBumper()
-                .whenBecomesTrue(new InstantCommand(() -> xyScale = 1))
-                .whenBecomesTrue(new InstantCommand(() -> turnScale = 1))
-                .whenBecomesTrue(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().setLedColor(0, 0, 255, 120000)));
+//        Gamepads.gamepad1().rightBumper()
+//                .whenBecomesTrue(new InstantCommand(() -> xyScale = 0.25))
+//                .whenBecomesTrue(new InstantCommand(() -> turnScale = 0.25))
+//                .whenBecomesTrue(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().setLedColor(255, 0, 0, 120000)));
+//
+//        Gamepads.gamepad1().leftBumper()
+//                .whenBecomesTrue(new InstantCommand(() -> xyScale = 1))
+//                .whenBecomesTrue(new InstantCommand(() -> turnScale = 1))
+//                .whenBecomesTrue(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().setLedColor(0, 0, 255, 120000)));
 
         Gamepads.gamepad1().leftBumper()
                 .or(Gamepads.gamepad1().rightBumper())
@@ -94,31 +95,32 @@ public class DriveOpMode extends NextFTCOpMode {
                 .whenBecomesTrue(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().rumble(250)));
         //INTAKE COMMANDS
 
-        Gamepads.gamepad2().dpadUp()
+        Gamepads.gamepad1().dpadUp()
                 .whenBecomesTrue(Shooter.INSTANCE.spinUpHigh);
 
-        Gamepads.gamepad2().dpadRight()
+        Gamepads.gamepad1().dpadRight()
                 .whenBecomesTrue(Shooter.INSTANCE.spinUpMid);
 
-        Gamepads.gamepad2().dpadDown()
+        Gamepads.gamepad1().dpadDown()
                 .whenBecomesTrue(Shooter.INSTANCE.spinUpLow);
 
+        Gamepads.gamepad1().dpadLeft()
+                .whenBecomesTrue(Shooter.INSTANCE.cutPower);
 
-        Gamepads.gamepad2().rightBumper()
-                .whenBecomesTrue(Intake.INSTANCE.spinUp)
+
+        Gamepads.gamepad1().rightBumper()
+                .whenTrue(Intake.INSTANCE.spinUp)
                 .whenBecomesFalse(Intake.INSTANCE.cutPower);
 
-        Gamepads.gamepad2().square()
-                .whenBecomesTrue(Loader.INSTANCE.spinUp);
+        Gamepads.gamepad1().square()
+                .whenTrue(Loader.INSTANCE.spinUp)
+                .whenBecomesFalse(Loader.INSTANCE.cutPower);
 
-        Gamepads.gamepad2().triangle()
+        Gamepads.gamepad1().triangle()
                 .whenBecomesTrue(Loader.INSTANCE.feedOut)
-                .whenBecomesTrue(Intake.INSTANCE.pushOut);
-
-        Gamepads.gamepad2().square()
-                .or(Gamepads.gamepad2().triangle())
-                .whenFalse(Intake.INSTANCE.cutPower)
-                .whenFalse(Loader.INSTANCE.cutPower);
+                .whenBecomesTrue(Intake.INSTANCE.pushOut)
+                .whenBecomesFalse(Loader.INSTANCE.cutPower)
+                .whenBecomesFalse(Intake.INSTANCE.cutPower);
     }
 
     @Override
