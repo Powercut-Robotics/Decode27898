@@ -67,7 +67,7 @@ public class DriveOpMode extends NextFTCOpMode {
                 Gamepads.gamepad1().leftStickY().negate().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().leftStickX().mapToRange(doubleValue -> doubleValue * xyScale),
                 Gamepads.gamepad1().rightStickX().mapToRange(doubleValue -> doubleValue * turnScale)
-                , new FieldCentric(imu)
+                //, new FieldCentric(imu)
         );
 
         driverControlled.schedule();
@@ -95,28 +95,28 @@ public class DriveOpMode extends NextFTCOpMode {
                 .whenBecomesTrue(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().rumble(250)));
         //INTAKE COMMANDS
 
-        Gamepads.gamepad1().dpadUp()
+        Gamepads.gamepad2().dpadUp()
                 .whenBecomesTrue(Shooter.INSTANCE.spinUpHigh);
 
-        Gamepads.gamepad1().dpadRight()
+        Gamepads.gamepad2().dpadRight()
                 .whenBecomesTrue(Shooter.INSTANCE.spinUpMid);
 
-        Gamepads.gamepad1().dpadDown()
+        Gamepads.gamepad2().dpadDown()
                 .whenBecomesTrue(Shooter.INSTANCE.spinUpLow);
 
-        Gamepads.gamepad1().dpadLeft()
+        Gamepads.gamepad2().dpadLeft()
                 .whenBecomesTrue(Shooter.INSTANCE.cutPower);
 
 
-        Gamepads.gamepad1().rightBumper()
+        Gamepads.gamepad2().rightBumper()
                 .whenTrue(Intake.INSTANCE.spinUp)
                 .whenBecomesFalse(Intake.INSTANCE.cutPower);
 
-        Gamepads.gamepad1().square()
+        Gamepads.gamepad2().square()
                 .whenTrue(Loader.INSTANCE.spinUp)
                 .whenBecomesFalse(Loader.INSTANCE.cutPower);
 
-        Gamepads.gamepad1().triangle()
+        Gamepads.gamepad2().triangle()
                 .whenBecomesTrue(Loader.INSTANCE.feedOut)
                 .whenBecomesTrue(Intake.INSTANCE.pushOut)
                 .whenBecomesFalse(Loader.INSTANCE.cutPower)

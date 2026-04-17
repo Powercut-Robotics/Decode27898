@@ -27,9 +27,11 @@ public class Shooter implements Subsystem {
     //Flywheel control system
     public double velocity = 0;
 
-    public static double velocityTargetLow = 1000;
-    public static double velocityTargetMid = 1350;
-    public static double velocityTargetHigh = 1500;
+    public static double velocityTargetLow = 1175;
+    public static double velocityTargetMid = 1250;
+    public static double velocityTargetHigh = 1375;
+
+    //Full battery required
 
     public static PIDCoefficients flywheelPIDCoef = new PIDCoefficients(-0.001, 0.0, 0.0);
     public static BasicFeedforwardParameters flywheelFFCoef = new BasicFeedforwardParameters(-0.0005, 0, -0.0275);

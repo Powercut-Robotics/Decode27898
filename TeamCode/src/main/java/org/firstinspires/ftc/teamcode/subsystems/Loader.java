@@ -18,7 +18,7 @@ public class Loader implements Subsystem {
 
     private double power = 0;
     private double angle = 0;
-    private static double targetPower = 0.7;
+    private static double targetPower = 1;
 
 
     private final MotorEx loaderMotor = new MotorEx("loader motor")

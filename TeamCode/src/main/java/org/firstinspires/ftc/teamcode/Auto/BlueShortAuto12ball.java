@@ -26,11 +26,11 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 
 
 @Autonomous(name = "Blue Goalside - 12", preselectTeleOp = "DriveOpMode")
-public class BlueGoalside12BallCommands extends NextFTCOpMode {
+public class BlueShortAuto12ball extends NextFTCOpMode {
 
 
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
-    public BlueGoalside12BallCommands() {
+    public BlueShortAuto12ball() {
         addComponents(
                 new SubsystemComponent(Shooter.INSTANCE, Loader.INSTANCE, Intake.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -51,6 +51,9 @@ public class BlueGoalside12BallCommands extends NextFTCOpMode {
         public PathChain Path9;
         public PathChain Path10;
         public PathChain Path11;
+
+        public PathChain Path12;
+
 
         public Paths(Follower follower) {
             Path1 = follower.pathBuilder()
@@ -86,7 +89,7 @@ public class BlueGoalside12BallCommands extends NextFTCOpMode {
             Path4 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(16.000, 84.000),
+                                    new Pose(14.000, 84.000),
                                     new Pose(45.000, 92.000)
                             )
                     )
@@ -106,8 +109,8 @@ public class BlueGoalside12BallCommands extends NextFTCOpMode {
             Path6 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(48.000, 59.000),
-                                    new Pose(11.000, 59.000)
+                                    new Pose(48.000, 61.000),
+                                    new Pose(4.000, 61.000)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
@@ -116,14 +119,26 @@ public class BlueGoalside12BallCommands extends NextFTCOpMode {
             Path7 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(13.500, 59.000),
-                                    new Pose(45.000, 92.000)
-                            )
+                                    new Pose(4.000, 61.000),
+                                    new Pose(20.000, 61.000)
+
+                    )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(125))
                     .build();
 
             Path8 = follower.pathBuilder()
+                    .addPath(
+                            new BezierLine(
+                                    new Pose(20.000, 61.000),
+                                    new Pose(45.000, 92.000)
+
+                            )
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(125))
+                    .build();
+
+            Path9 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
                                     new Pose(45.000, 92.000),
@@ -133,35 +148,35 @@ public class BlueGoalside12BallCommands extends NextFTCOpMode {
                     .setLinearHeadingInterpolation(Math.toRadians(125), Math.toRadians(180))
                     .build();
 
-            Path9 = follower.pathBuilder()
+            Path10 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
                                     new Pose(48.000, 35.500),
-                                    new Pose(11.000, 35.500)
+                                    new Pose(2.000, 35.500)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
-            Path10 = follower.pathBuilder()
+            Path11 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(13.500, 35.500),
+                                    new Pose(2.000, 35.500),
                                     new Pose(45.000, 92.000)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(125))
                     .build();
-
-            Path11 = follower.pathBuilder()
+            Path12 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(45.000, 92.000),
-                                    new Pose(58.000, 120.000)
+                                    new Pose(48.000, 92.000),
+                                    new Pose(4.000, 61.000)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(125), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
+
         }
     }
 
@@ -187,6 +202,7 @@ public class BlueGoalside12BallCommands extends NextFTCOpMode {
     public void onStartButtonPressed() {
         Intake.INSTANCE.spinUp.schedule();
         new SequentialGroup(
+
                 Intake.INSTANCE.spinUp,
                 Shooter.INSTANCE.spinUpMid,
 
@@ -217,22 +233,30 @@ public class BlueGoalside12BallCommands extends NextFTCOpMode {
 
                 //drive to shoot, do so
                 new FollowPath(paths.Path7),
-                Loader.INSTANCE.spinUp,
-                new Delay(1.5),
-                Loader.INSTANCE.cutPower,
-
-
-                new FollowPath(paths.Path8),
-                new FollowPath(paths.Path9),
 
 
                 //drive to shoot, do so
-                new FollowPath(paths.Path10),
+                new FollowPath(paths.Path8),
                 Loader.INSTANCE.spinUp,
                 new Delay(1.5),
                 Loader.INSTANCE.cutPower,
 
+
+                //drive to shoot, do so
+                new FollowPath(paths.Path9),
+                new FollowPath(paths.Path10),
+
+
                 new FollowPath(paths.Path11),
+                Loader.INSTANCE.spinUp,
+                new Delay(1.5),
+                Loader.INSTANCE.cutPower,
+
+                new FollowPath(paths.Path12),
+
+
+
+
                 Intake.INSTANCE.cutPower,
                 Shooter.INSTANCE.cutPower
         ).schedule();
@@ -240,6 +264,10 @@ public class BlueGoalside12BallCommands extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
+
+        telemetry.addData("X", follower().getPose().getX());
+        telemetry.addData("Y", follower().getPose().getX());
+        telemetry.addData(XH follower().getPose().getX());
         panelsTelemetry.update(telemetry);
         telemetry.update();
     }

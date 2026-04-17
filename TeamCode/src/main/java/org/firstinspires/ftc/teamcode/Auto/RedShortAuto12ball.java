@@ -26,11 +26,11 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 
 
 @Autonomous(name = "Red Goalside - 12", preselectTeleOp = "DriveOpMode")
-public class RedGoalside12BallCommands extends NextFTCOpMode {
+public class RedShortAuto12ball extends NextFTCOpMode {
 
 
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
-    public RedGoalside12BallCommands() {
+    public RedShortAuto12ball() {
         addComponents(
                 new SubsystemComponent(Shooter.INSTANCE, Loader.INSTANCE, Intake.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -51,6 +51,8 @@ public class RedGoalside12BallCommands extends NextFTCOpMode {
         public PathChain Path9;
         public PathChain Path10;
         public PathChain Path11;
+
+        public PathChain Path12;
 
         public Paths(Follower follower) {
             Path1 = follower.pathBuilder()
@@ -97,7 +99,7 @@ public class RedGoalside12BallCommands extends NextFTCOpMode {
                     .addPath(
                             new BezierLine(
                                     new Pose(100.000, 92.000),
-                                    new Pose(96.000, 59.000)
+                                    new Pose(96.000, 61.000)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(55), Math.toRadians(0))
@@ -106,8 +108,8 @@ public class RedGoalside12BallCommands extends NextFTCOpMode {
             Path6 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(96.000, 59.000),
-                                    new Pose(130.000, 59.000)
+                                    new Pose(96.000, 61.000),
+                                    new Pose(140.000, 61.000)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
@@ -116,14 +118,24 @@ public class RedGoalside12BallCommands extends NextFTCOpMode {
             Path7 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(130.000, 59.000),
-                                    new Pose(100.000, 92.000)
+                                    new Pose(140.000, 61.000),
+                                    new Pose(124.000, 61.000)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(55))
                     .build();
 
             Path8 = follower.pathBuilder()
+                    .addPath(
+                            new BezierLine(
+                                    new Pose(124.000, 61.000),
+                                    new Pose(100.000, 92.000)
+                            )
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(55))
+                    .build();
+
+            Path9 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
                                     new Pose(100.000, 92.000),
@@ -133,17 +145,17 @@ public class RedGoalside12BallCommands extends NextFTCOpMode {
                     .setLinearHeadingInterpolation(Math.toRadians(55), Math.toRadians(0))
                     .build();
 
-            Path9 = follower.pathBuilder()
+            Path10 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
                                     new Pose(96.000, 34.500),
-                                    new Pose(132.000, 34.500)
+                                    new Pose(140.000, 34.500)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
-            Path10 = follower.pathBuilder()
+            Path11 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
                                     new Pose(132.000, 34.500),
@@ -153,11 +165,11 @@ public class RedGoalside12BallCommands extends NextFTCOpMode {
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(55))
                     .build();
 
-            Path11 = follower.pathBuilder()
+            Path12 = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
                                     new Pose(100.000, 92.000),
-                                    new Pose(86.000, 120.000)
+                                    new Pose(140.000, 61.000)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(55), Math.toRadians(0))
@@ -218,22 +230,31 @@ public class RedGoalside12BallCommands extends NextFTCOpMode {
 
                 //drive to shoot, do so
                 new FollowPath(paths.Path7),
-                Loader.INSTANCE.spinUp,
-                new Delay(1.5),
-                Loader.INSTANCE.cutPower,
-
-
                 new FollowPath(paths.Path8),
-                new FollowPath(paths.Path9),
 
 
                 //drive to shoot, do so
-                new FollowPath(paths.Path10),
+                new FollowPath(paths.Path8),
                 Loader.INSTANCE.spinUp,
                 new Delay(1.5),
                 Loader.INSTANCE.cutPower,
 
+
+                //drive to shoot, do so
+                new FollowPath(paths.Path9),
+                new FollowPath(paths.Path10),
+
+
                 new FollowPath(paths.Path11),
+                Loader.INSTANCE.spinUp,
+                new Delay(1.5),
+                Loader.INSTANCE.cutPower,
+
+                new FollowPath(paths.Path12),
+
+
+
+
                 Intake.INSTANCE.cutPower,
                 Shooter.INSTANCE.cutPower
         ).schedule();
@@ -245,3 +266,4 @@ public class RedGoalside12BallCommands extends NextFTCOpMode {
         telemetry.update();
     }
 }
+
