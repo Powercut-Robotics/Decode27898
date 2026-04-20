@@ -266,8 +266,8 @@ public class BlueShortAuto12ball extends NextFTCOpMode {
     public void onUpdate() {
 
         telemetry.addData("X", follower().getPose().getX());
-        telemetry.addData("Y", follower().getPose().getX());
-        telemetry.addData(XH follower().getPose().getX());
+        telemetry.addData("Y", follower().getPose().getY());
+        telemetry.addData("H", follower().getPose().getHeading());
         panelsTelemetry.update(telemetry);
         telemetry.update();
     }

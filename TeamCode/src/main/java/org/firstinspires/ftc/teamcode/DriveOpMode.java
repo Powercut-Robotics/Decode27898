@@ -90,6 +90,13 @@ public class DriveOpMode extends NextFTCOpMode {
                     .whenFalse(new InstantCommand(() -> xyScale = 0.75))
                     .whenBecomesFalse(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().setLedColor(0, 255, 0, 120000)));
 
+        Gamepads.gamepad1().rightBumper()
+                .or(Gamepads.gamepad1().rightBumper())
+                .whenFalse(new InstantCommand(() -> xyScale = 1))
+                .whenFalse(new InstantCommand(() -> xyScale = 1))
+                .whenBecomesFalse(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().setLedColor(0, 255, 0, 120000)));
+
+
         Gamepads.gamepad1().share()
                 .whenBecomesTrue(new InstantCommand(() -> imu.zeroed()))
                 .whenBecomesTrue(new InstantCommand(() -> Gamepads.gamepad1().getGamepad().invoke().rumble(250)));
